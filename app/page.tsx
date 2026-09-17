@@ -1,7 +1,7 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
-import { ShoppingBag, MailIcon, PhoneCallIcon } from "lucide-react";
 import {
   FaFacebookF,
   FaInstagram,
@@ -11,6 +11,7 @@ import {
 } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
 import { FiArrowUpRight, FiChevronDown } from "react-icons/fi";
+import CartPannel from "../components/CartPannel";
 import PopCategoriesCard from "../components/PopCategoriesCard";
 
 export default function Home() {
@@ -82,19 +83,14 @@ export default function Home() {
                 Category
               </a>
 
-              <button className="cart-box relative">
-                <div className="badge text-sm  rounded-2xl bg-red-600 absolute left-4 -top-2 w-5 h-5 flex items-center justify-center ">
-                  <h1>3</h1>
-                </div>
-                <ShoppingBag className="transition text-heighlight hover:text-yellow-700" />
-              </button>
+              <CartPannel />
 
-              <a
+              {/* <a
                 href={`#`}
                 className="transition flex items-center justify-center text-sm hover:text-saffron border rounded-2xl pt-[5px] pb-1.5 px-3 text-heighlight bg-black hover:text-black hover:bg-heighlight"
               >
                 Login
-              </a>
+              </a> */}
             </div>
           </div>
         </nav>
@@ -110,12 +106,15 @@ export default function Home() {
             <br /> to quotes, designs, and more
           </p>
           <div className="flex w-fit ml-2 mt-5 gap-5">
-            <button className="bg-heighlight text-black text-[20px] flex items-center gap-1 rounded-4xl  py-2.5 px-4.5">
+            <Link
+              href={"/Categories"}
+              className="bg-heighlight text-black text-[20px] flex items-center gap-1 rounded-4xl  py-2.5 px-4.5"
+            >
               Explore Posters <FiArrowUpRight />
-            </button>
-            <button className="bg-white/20 border border-white/40 text-black text-[20px] flex items-center gap-1 rounded-4xl  py-2.5 px-4.5">
+            </Link>
+            {/* <button className="bg-white/20 border border-white/40 text-black text-[20px] flex items-center gap-1 rounded-4xl  py-2.5 px-4.5">
               SignUp
-            </button>
+            </button> */}
           </div>
         </div>
       </section>
