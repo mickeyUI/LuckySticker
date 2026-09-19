@@ -314,6 +314,8 @@ export default function CheckoutModal({
                 className="transition-all ease-in-out bg-black/30 w-full border border-amber-200/30 focus:border-amber-50/20 rounded-[10px] px-5 py-3 text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
 
+              <p className="text-amber-100/50">delivery fee is 0 birr</p>
+
               <button
                 type="button"
                 className="w-full rounded-full bg-heighlight px-5 py-3 font-bold text-black transition hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-45"
