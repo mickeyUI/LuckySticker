@@ -9,9 +9,9 @@ import {
 } from "react";
 
 export type CartItem = {
-  posterId: string;
+  id: string;
   name: string;
-  image: string;
+  poster_img: string;
   size: string;
   price: number;
   quantity: number;
@@ -20,12 +20,12 @@ export type CartItem = {
 type CartContextType = {
   items: CartItem[];
   addToCart: (item: CartItem) => void;
-  removeFromCart: (posterId: string, size: string) => void;
-  updateQuantity: (posterId: string, size: string, quantity: number) => void;
-  increaseQuantity: (posterId: string, size: string) => void;
-  decreaseQuantity: (posterId: string, size: string) => void;
+  removeFromCart: (id: string, size: string) => void;
+  updateQuantity: (id: string, size: string, quantity: number) => void;
+  increaseQuantity: (id: string, size: string) => void;
+  decreaseQuantity: (id: string, size: string) => void;
   clearCart: () => void;
-  getItemQuantity: (posterId: string, size: string) => number;
+  getItemQuantity: (id: string, size: string) => number;
   getTotalItems: () => number;
   getSubtotal: () => number;
 };
@@ -36,34 +36,41 @@ const STORAGE_KEY = "poster-cart";
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [isHydrated, setIsHydrated] = useState(false);
 
-  // Load cart
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const loadTimer = window.setTimeout(() => {
+      const stored = localStorage.getItem(STORAGE_KEY);
 
-    if (stored) {
-      try {
-        setItems(JSON.parse(stored));
-      } catch {
-        localStorage.removeItem(STORAGE_KEY);
+      if (stored) {
+        try {
+          setItems(JSON.parse(stored));
+        } catch (error) {
+          console.log("local error", error);
+          localStorage.removeItem(STORAGE_KEY);
+        }
       }
-    }
+
+      setIsHydrated(true);
+    }, 0);
+
+    return () => window.clearTimeout(loadTimer);
   }, []);
 
-  // Save cart
   useEffect(() => {
+    if (!isHydrated) return;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }, [items]);
+  }, [items, isHydrated]);
 
   const addToCart = (item: CartItem) => {
     setItems((current) => {
       const existing = current.find(
-        (i) => i.posterId === item.posterId && i.size === item.size,
+        (i) => i.id === item.id && i.size === item.size,
       );
 
       if (existing) {
         return current.map((i) =>
-          i.posterId === item.posterId && i.size === item.size
+          i.id === item.id && i.size === item.size
             ? { ...i, quantity: i.quantity + item.quantity }
             : i,
         );
@@ -73,44 +80,40 @@ export function CartProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const removeFromCart = (posterId: string, size: string) => {
+  const removeFromCart = (id: string, size: string) => {
     setItems((current) =>
-      current.filter(
-        (item) => !(item.posterId === posterId && item.size === size),
-      ),
+      current.filter((item) => !(item.id === id && item.size === size)),
     );
   };
 
-  const updateQuantity = (posterId: string, size: string, quantity: number) => {
+  const updateQuantity = (id: string, size: string, quantity: number) => {
     if (quantity <= 0) {
-      removeFromCart(posterId, size);
+      removeFromCart(id, size);
       return;
     }
 
     setItems((current) =>
       current.map((item) =>
-        item.posterId === posterId && item.size === size
-          ? { ...item, quantity }
-          : item,
+        item.id === id && item.size === size ? { ...item, quantity } : item,
       ),
     );
   };
 
-  const increaseQuantity = (posterId: string, size: string) => {
+  const increaseQuantity = (id: string, size: string) => {
     setItems((current) =>
       current.map((item) =>
-        item.posterId === posterId && item.size === size
+        item.id === id && item.size === size
           ? { ...item, quantity: item.quantity + 1 }
           : item,
       ),
     );
   };
 
-  const decreaseQuantity = (posterId: string, size: string) => {
+  const decreaseQuantity = (id: string, size: string) => {
     setItems((current) =>
       current
         .map((item) =>
-          item.posterId === posterId && item.size === size
+          item.id === id && item.size === size
             ? { ...item, quantity: item.quantity - 1 }
             : item,
         )
@@ -122,10 +125,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems([]);
   };
 
-  const getItemQuantity = (posterId: string, size: string) => {
+  const getItemQuantity = (id: string, size: string) => {
     return (
-      items.find((item) => item.posterId === posterId && item.size === size)
-        ?.quantity ?? 0
+      items.find((item) => item.id === id && item.size === size)?.quantity ?? 0
     );
   };
 

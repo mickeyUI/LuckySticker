@@ -9,13 +9,26 @@ import {
   X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { CartItem } from "@/context/Context";
+import { supabase } from "@/service/supabaseClient";
+import { useCart } from "@/context/Context";
 
-export type CheckoutItem = {
-  id: number;
-  title: string;
-  category: string;
-  price: number;
+type OrderProp = {
+  customer_name: string;
+  phone_number: string;
+  delivery_location: string;
+  payment_method: PaymentMode;
+  status: Status;
+  payment_screenshot: string;
+  payment_status: Status;
+};
+
+type OrderItemProp = {
+  order_id: string;
+  poster_id: string;
+  poster_size: string;
   quantity: number;
+  unit_price: number;
 };
 
 type DeliveryLocation = {
@@ -24,12 +37,13 @@ type DeliveryLocation = {
   detail: string;
 };
 
-type PaymentMode = "delivery" | "transfer";
+type PaymentMode = "onDelivery" | "transfer";
+type Status = "pending";
 type TransferProvider = "Telebirr" | "CBE";
 
 type CheckoutModalProps = {
   isOpen: boolean;
-  items: CheckoutItem[];
+  items: CartItem[];
   onClose: () => void;
 };
 
@@ -49,6 +63,41 @@ const sampleDeliveryLocations: DeliveryLocation[] = [
     name: "Summit",
     detail: "Near Safari mall between 9:00 AM-4:00 PM",
   },
+  {
+    id: "piazza",
+    name: "Piazza",
+    detail: "Near St. George Cathedral between 10:00 AM-12:00 PM",
+  },
+  {
+    id: "mexico",
+    name: "Mexico",
+    detail: "Around Mexico Square between 10:00 AM-1:00 PM",
+  },
+  {
+    id: "kazanchis",
+    name: "Kazanchis",
+    detail: "Near the business district between 10:00 AM-1:00 PM",
+  },
+  {
+    id: "megenagna",
+    name: "Megenagna",
+    detail: "Around Megenagna junction between 9:00 AM-3:00 PM",
+  },
+  {
+    id: "cmc",
+    name: "CMC",
+    detail: "Around CMC area between 10:00 AM-3:00 PM",
+  },
+  {
+    id: "merkato",
+    name: "Merkato",
+    detail: "Near Anwar Mosque between 10:00 AM-1:00 PM",
+  },
+  {
+    id: "meskel-square",
+    name: "Meskel Square",
+    detail: "Around Meskel Square between 11:00 AM-2:00 PM",
+  },
 ];
 
 export default function CheckoutModal({
@@ -56,14 +105,18 @@ export default function CheckoutModal({
   items,
   onClose,
 }: CheckoutModalProps) {
+  const { clearCart } = useCart();
   const [locationId, setLocationId] = useState(
     sampleDeliveryLocations[0]?.id ?? "",
   );
-  const [paymentMode, setPaymentMode] = useState<PaymentMode>("delivery");
+  const [paymentMode, setPaymentMode] = useState<PaymentMode>("onDelivery");
   const [transferProvider, setTransferProvider] =
     useState<TransferProvider>("Telebirr");
   const [receiptName, setReceiptName] = useState("");
+  const [customerName, setcustomerName] = useState("");
+  const [phoneNumber, setphoneNumber] = useState();
   const [isOrdered, setIsOrdered] = useState(false);
+  const [file, setFile] = useState();
 
   const selectedLocation = sampleDeliveryLocations.find(
     (location) => location.id === locationId,
@@ -78,11 +131,74 @@ export default function CheckoutModal({
   const canOrder =
     items.length > 0 && Boolean(locationId) && (!needsReceipt || receiptName);
 
-  function handleOrder() {
-    if (!canOrder) {
-      return;
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setReceiptName(e.target.files?.[0]?.name ?? "");
+    const selectedFile = e.target.files?.[0];
+
+    if (!selectedFile) return;
+
+    setFile(selectedFile);
+  }
+
+  const uploadScreenshot = async () => {
+    if (!file) {
+      return "";
+    }
+    // 1. Upload image to Supabase Storage
+    const fileName = `${Date.now()}-${file.name}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("payment_screenshot")
+      .upload(fileName, file);
+
+    if (uploadError) {
+      throw uploadError;
     }
 
+    // 2. Get public image URL
+    const { data: urlData } = supabase.storage
+      .from("payment_screenshot")
+      .getPublicUrl(fileName);
+    return urlData.publicUrl;
+  };
+
+  async function handleOrder() {
+    if (!canOrder) return;
+    if (!customerName || !phoneNumber) return;
+
+    const paymentScreenshotUrl = await uploadScreenshot();
+
+    const order: OrderProp = {
+      customer_name: customerName,
+      phone_number: phoneNumber,
+      delivery_location: selectedLocation?.name,
+      payment_method: paymentMode,
+      status: "pending",
+      payment_screenshot: paymentScreenshotUrl,
+      payment_status: "pending",
+    };
+
+    const { data, error } = await supabase
+      .from("orders")
+      .insert(order)
+      .select();
+    console.log(data);
+
+    try {
+      items.forEach(async (item) => {
+        const orderitem: OrderItemProp = {
+          order_id: data?.[0]?.id,
+          poster_id: item.id,
+          poster_size: item.size,
+          quantity: item.quantity,
+          unit_price: item.price,
+        };
+        const { error } = await supabase.from("order_items").insert(orderitem);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    clearCart();
     setIsOrdered(true);
   }
 
@@ -172,10 +288,10 @@ export default function CheckoutModal({
                     >
                       <div>
                         <h4 className="font-semibold text-amber-50">
-                          {item.title}
+                          {item.name}
                         </h4>
                         <p className="text-sm text-amber-100/55">
-                          {item.category} x {item.quantity}
+                          {item.size} x {item.quantity}
                         </p>
                       </div>
                       <p className="shrink-0 font-bold text-heighlight">
@@ -230,11 +346,11 @@ export default function CheckoutModal({
                   <button
                     type="button"
                     className={`rounded-[10px] border px-4 py-3 text-left transition ${
-                      paymentMode === "delivery"
+                      paymentMode === "onDelivery"
                         ? "border-heighlight bg-heighlight text-black"
                         : "border-white/10 bg-white/[0.04] text-amber-50 hover:bg-white/10"
                     }`}
-                    onClick={() => setPaymentMode("delivery")}
+                    onClick={() => setPaymentMode("onDelivery")}
                   >
                     Pay on delivery
                   </button>
@@ -281,9 +397,7 @@ export default function CheckoutModal({
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(event) =>
-                        setReceiptName(event.target.files?.[0]?.name ?? "")
-                      }
+                      onChange={handleFileChange}
                       className="w-full rounded-[10px] border border-dashed border-amber-100/25 bg-black/20 px-4 py-3 text-sm text-amber-100/70 file:mr-4 file:rounded-full file:border-0 file:bg-heighlight file:px-4 file:py-2 file:font-semibold file:text-black"
                     />
                     {receiptName ? (
@@ -305,13 +419,19 @@ export default function CheckoutModal({
 
               <input
                 type="text"
+                value={customerName}
+                onChange={(e) => setcustomerName(e.target.value)}
                 placeholder="Full Name"
                 className="transition-all ease-in-out bg-black/30 w-full border border-amber-200/30 focus:border-amber-50/30 rounded-[10px] px-5 py-3 text-white"
+                required
               />
               <input
                 type="number"
+                value={phoneNumber}
+                onChange={(e) => setphoneNumber(e.target.value)}
                 placeholder="Phone Number"
                 className="transition-all ease-in-out bg-black/30 w-full border border-amber-200/30 focus:border-amber-50/20 rounded-[10px] px-5 py-3 text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                required
               />
 
               <p className="text-amber-100/50">delivery fee is 0 birr</p>

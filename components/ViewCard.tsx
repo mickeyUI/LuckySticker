@@ -32,18 +32,19 @@ export default function ViewCard({
     { id: "A4", label: "A4", price: 50 },
   ];
   const tagsString = tags.join(", ");
-  const poster_size = cardSize.find((card) => card.id == selectedCard);
+  const posterSize =
+    cardSize.find((card) => card.id === selectedCard) ?? cardSize[0];
 
   const { addToCart } = useCart();
 
   const handleAddToCart = () => {
     try {
       const item: CartItem = {
-        posterId: id,
-        name: name,
-        image: poster_img,
+        id,
+        name,
+        poster_img,
         size: selectedCard,
-        price: poster_size.price,
+        price: posterSize.price,
         quantity: 1,
       };
       addToCart(item);
@@ -79,7 +80,7 @@ export default function ViewCard({
           <div className="mt-1 flex items-center gap-2">
             <p className="text-[20px] text-amber-100">Price </p>
             <div className="border w-fit px-1 rounded-[5px] border-amber-400 bg-amber-500/5">
-              <p className="text-[18px] text-amber-500">{poster_size.price}</p>
+              <p className="text-[18px] text-amber-500">{posterSize.price}</p>
             </div>
           </div>
           <button

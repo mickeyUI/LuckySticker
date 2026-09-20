@@ -3,37 +3,22 @@
 import { ShoppingBag, X, MinusIcon, PlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import CheckoutModal, { CheckoutItem } from "./CheckoutModal";
-
-const sampleCartItems: CheckoutItem[] = [
-  {
-    id: 1,
-    title: "Naruto Wall Poster",
-    category: "Anime",
-    price: 70,
-    quantity: 2,
-  },
-  {
-    id: 2,
-    title: "Classic Car Print",
-    category: "Cars",
-    price: 90,
-    quantity: 1,
-  },
-  {
-    id: 3,
-    title: "Teddy Afro Poster",
-    category: "Music",
-    price: 80,
-    quantity: 1,
-  },
-];
+import CheckoutModal from "./CheckoutModal";
+import { useCart } from "@/context/Context";
 
 export default function CartPannel() {
   const [isOpen, setIsOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const cartTotal = sampleCartItems.reduce(
+
+  const {
+    items,
+    increaseQuantity,
+    decreaseQuantity,
+    removeFromCart,
+    clearCart,
+  } = useCart();
+  const cartTotal = items.reduce(
     (total, item) => total + item.price * item.quantity,
     0,
   );
@@ -84,19 +69,29 @@ export default function CartPannel() {
             <X size={18} />
           </button>
         </div>
+        {items.length > 0 && (
+          <div className="h-[30px] flex items-center">
+            <button
+              onClick={() => clearCart()}
+              className="text-gray-200/70 hover:text-gray-50"
+            >
+              clear
+            </button>
+          </div>
+        )}
 
-        <div className="flex flex-1 flex-col gap-3 overflow-y-auto py-5">
-          {sampleCartItems.map((item) => (
+        <div className="flex flex-1 flex-col gap-3 overflow-y-auto py-0">
+          {items.map((item) => (
             <div
-              key={item.id}
+              key={`${item.id}-${item.size}`}
               className="grid grid-cols-[5fr_2fr] border border-white/10 bg-white/[0.04] rounded-2xl"
             >
               <div className="info flex gap-3 rounded-[10px]  p-3">
-                <div className="h-20 w-16 rounded-[8px] bg-amber-100/15" />
+                <div className="h-20 w-16 rounded-[8px] bg-amber-600/15" />
                 <div className="flex flex-1 flex-col justify-center">
-                  <h3 className="font-semibold text-amber-50">{item.title}</h3>
+                  <h3 className="font-semibold text-amber-50">{item.name}</h3>
                   <p className="text-sm text-amber-100/60">
-                    {item.category} x {item.quantity}
+                    {item.quantity} {item.size}
                   </p>
                   <p className="mt-1 text-sm font-semibold text-heighlight">
                     {item.price * item.quantity} birr
@@ -104,18 +99,25 @@ export default function CartPannel() {
                 </div>
               </div>
 
-              <div className="flex justify-center items-center">
+              <div className="flex flex-col gap-2 justify-center items-center">
                 <div className="bg-white/30 flex rounded-2xl p-1 gap-1 shadow-2xl shadow-black">
                   <MinusIcon
-                    onClick={() => ""}
+                    onClick={() => decreaseQuantity(item.id, item.size)}
                     className="bg-amber-100/50 rounded-l-2xl hover:bg-black/10"
                   />
                   <h1>{item.quantity}</h1>
                   <PlusIcon
-                    onClick={() => ""}
+                    onClick={() => increaseQuantity(item.id, item.size)}
                     className="bg-amber-100/50 rounded-r-2xl hover:bg-black/10"
                   />
                 </div>
+
+                <button
+                  onClick={() => removeFromCart(item.id, item.size)}
+                  className="bg-black/50 shadow shadow-amber-100/10 hover:shadow-amber-50/0 hover:bg-black/80 py-1.5 px-3.5 rounded-2xl flex justify-center items-center"
+                >
+                  <h1>remove</h1>
+                </button>
               </div>
             </div>
           ))}
@@ -149,9 +151,11 @@ export default function CartPannel() {
         onClick={() => setIsOpen(true)}
         aria-label="Open cart"
       >
-        <div className="badge text-sm rounded-2xl bg-red-500 absolute left-4 -top-1 w-5 h-5 flex items-center justify-center">
-          <h1>3</h1>
-        </div>
+        {items.length > 0 && (
+          <div className="badge text-sm rounded-2xl bg-red-500 absolute left-4 -top-1 w-5 h-5 flex items-center justify-center">
+            <h1>{items.length}</h1>
+          </div>
+        )}
         <ShoppingBag className="transition text-heighlight hover:text-yellow-700" />
       </button>
 
@@ -161,7 +165,7 @@ export default function CartPannel() {
               {cartPanel}
               <CheckoutModal
                 isOpen={isCheckoutOpen}
-                items={sampleCartItems}
+                items={items}
                 onClose={() => setIsCheckoutOpen(false)}
               />
             </>,

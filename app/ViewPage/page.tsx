@@ -5,6 +5,7 @@ import { ShoppingBag } from "lucide-react";
 import ViewCard from "../../components/ViewCard";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/service/supabaseClient";
+import CartPannel from "@/components/CartPannel";
 
 type poster = {
   id: string;
@@ -58,12 +59,7 @@ export default function ViewPage() {
           <button className="bg-heighlight/70 hover:bg-heighlight py-2 px-4 rounded-3xl transition-all ease-in-out">
             Search
           </button>
-          <button className="cart-box relative">
-            <div className="badge text-sm  rounded-2xl bg-red-500 absolute left-4 -top-1 w-5 h-5 flex items-center justify-center ">
-              <h1 className="">3</h1>
-            </div>
-            <ShoppingBag className="transition text-heighlight hover:text-yellow-700" />
-          </button>
+          <CartPannel />
         </div>
       </section>
 
