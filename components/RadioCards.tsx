@@ -2,22 +2,18 @@
 
 import { useState } from "react";
 
-export default function RadioSquareCards() {
+export default function RadioSquareCards({
+  cardSize,
+  selectedCard = "A1",
+  setSelectedCard,
+}) {
   // Store the ID of the currently selected card (defaulting to 'A1')
-  const [selectedCard, setSelectedCard] = useState("A1");
-
-  const cards = [
-    { id: "A1", label: "A1" },
-    { id: "A2", label: "A2" },
-    { id: "A3", label: "A3" },
-    { id: "A4", label: "A4" },
-  ];
 
   return (
     <div className="w-full max-w-xl mx-auto p-4">
       {/* Grid container: 2 columns on mobile, 4 columns on larger screens */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4" role="radiogroup">
-        {cards.map((card) => {
+        {cardSize.map((card) => {
           const isSelected = selectedCard === card.id;
 
           return (

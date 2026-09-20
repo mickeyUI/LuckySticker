@@ -1,8 +1,48 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import CartPannel from "../../components/CartPannel";
 import CategoryCarousel from "../../components/CategoryCarousel";
+import { supabase } from "@/service/supabaseClient";
+import { useRouter } from "next/navigation";
+
+type poster = {
+  id: string;
+  name: string;
+  poster_img: string;
+  tags: string[];
+};
 
 export default function Categories() {
+  const router = useRouter();
+  const [posters, setPosters] = useState<poster[]>([]);
+  const [query, setQuery] = useState<string>("");
+  const params = new URLSearchParams();
+  useEffect(() => {
+    const loadData = async () => {
+      const { data, error } = await supabase
+        .from("poster")
+        .select("id, name, poster_img, tags");
+      setPosters(data);
+      if (error) {
+        console.log(error);
+      }
+    };
+    loadData();
+  }, []);
+
+  const parameterSearch = () => {
+    if (!query) return;
+    params.set("q", query);
+    router.push(`/Search?${params.toString()}`);
+  };
+
+  const handleViewingRoute = (id: string) => {
+    if (!id) return;
+    params.set("id", id);
+    router.push(`/ViewPage?${params.toString()}`);
+  };
   return (
     <div>
       <section className="uppersection grid grid-cols-[2fr_4fr]  p-5 mx-3 mb-4">
@@ -14,9 +54,14 @@ export default function Categories() {
         <div className="flex justify-end gap-5">
           <input
             type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
             className="bg-amber-100/20 border-2 border-white/10 w-[40%] rounded-3xl text-black/80 text-[18px] pl-4 focus:outline-none focus:bg-amber-100/70 focus:border-white/30 transition-all ease-in-out"
           />
-          <button className="bg-heighlight/70 hover:bg-heighlight py-2 px-4 rounded-3xl transition-all ease-in-out">
+          <button
+            onClick={parameterSearch}
+            className="bg-heighlight/70 hover:bg-heighlight py-2 px-4 rounded-3xl transition-all ease-in-out"
+          >
             Search
           </button>
           <CartPannel />
@@ -27,21 +72,24 @@ export default function Categories() {
 
       <section className="cards-display">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 p-10 w-fit">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((keyx) => (
-            <div key={keyx} className="poster-card rounded-[10px]">
+          {posters.map((poster) => (
+            <div
+              key={poster.id}
+              onClick={() => handleViewingRoute(poster.id)}
+              className="poster-card rounded-[10px] h-fit"
+            >
               <div className="poster-image">
                 <img
-                  src="https://picsum.photos/id/237/200/300"
-                  alt="d"
-                  className="h-[300px] w-[300px] object-cover"
+                  src={poster.poster_img}
+                  alt="img"
+                  className="h-[300px] w-[200px] object-cover"
                 />
               </div>
 
               <div className="info-display">
-                <h1 className="text-[25px] font-bold leading-tight">title</h1>
-                <p className="text-sm font-semibold uppercase tracking-[0.22em]">
-                  category
-                </p>
+                <h1 className="text-[20px] font-bold leading-tight h-[40px]">
+                  {poster.name}
+                </h1>
               </div>
             </div>
           ))}

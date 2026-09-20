@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ShoppingBag } from "lucide-react";
-import ViewCard from "../../components/ViewCard";
-import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import CartPannel from "../../components/CartPannel";
+import CategoryCarousel from "../../components/CategoryCarousel";
 import { supabase } from "@/service/supabaseClient";
+import { useSearchParams } from "next/navigation";
 
 type poster = {
   id: string;
@@ -13,70 +14,64 @@ type poster = {
   tags: string[];
 };
 
-export default function ViewPage() {
-  const [poster, setPoster] = useState<poster>({
-    id: "",
-    name: "",
-    poster_img: "",
-    tags: [],
-  });
+export default function Search() {
+  const [posters, setPosters] = useState<poster[]>([]);
+  const [query, setQuery] = useState<string>("");
+  const params = new URLSearchParams();
   const searchParams = useSearchParams();
-  const posterId = searchParams.get("id");
 
   useEffect(() => {
-    if (!posterId) return;
+    const searchQuery = searchParams.get("q");
+    const tags = searchQuery?.split(" ");
+    const filters = tags.map((tag) => `tags.cs.{${tag}}`).join(",");
 
-    const pullPoster = async () => {
+    const search = async () => {
       const { data, error } = await supabase
         .from("poster")
         .select("id, name, poster_img, tags")
-        .eq("id", posterId)
-        .maybeSingle();
-      console.log(data);
+        .or(filters);
+      setPosters(data);
       if (error) {
         console.log(error);
-        return;
       }
-
-      if (data) setPoster(data);
     };
-    pullPoster();
-  }, [posterId]);
+    search();
+  }, []);
+
+  const parameterSearch = () => {
+    if (!query) return;
+    params.set("q", query);
+  };
+
+  //   if (!searchQuery) return;
   return (
     <div>
-      <section className="uppersection grid grid-cols-[2fr_4fr]  p-5 mb-5">
+      <section className="uppersection grid grid-cols-[2fr_4fr]  p-5 mx-3 mb-4">
         <div className="flex items-center">
-          <a href="#" className="text-3xl font-bold text-amber-100/90">
+          <Link href="/" className="text-3xl font-bold text-amber-100/90">
             Lucky Sticker
-          </a>
+          </Link>
         </div>
         <div className="flex justify-end gap-5">
           <input
             type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
             className="bg-amber-100/20 border-2 border-white/10 w-[40%] rounded-3xl text-black/80 text-[18px] pl-4 focus:outline-none focus:bg-amber-100/70 focus:border-white/30 transition-all ease-in-out"
           />
-          <button className="bg-heighlight/70 hover:bg-heighlight py-2 px-4 rounded-3xl transition-all ease-in-out">
+          <button
+            onClick={parameterSearch}
+            className="bg-heighlight/70 hover:bg-heighlight py-2 px-4 rounded-3xl transition-all ease-in-out"
+          >
             Search
           </button>
-          <button className="cart-box relative">
-            <div className="badge text-sm  rounded-2xl bg-red-500 absolute left-4 -top-1 w-5 h-5 flex items-center justify-center ">
-              <h1 className="">3</h1>
-            </div>
-            <ShoppingBag className="transition text-heighlight hover:text-yellow-700" />
-          </button>
+          <CartPannel />
         </div>
       </section>
 
-      <ViewCard
-        id={poster.id}
-        name={poster.name}
-        poster_img={poster.poster_img}
-        tags={poster.tags}
-      />
-
-      {/* <section className="cards-display">
+      <section className="cards-display">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 p-10 w-fit">
-          {poster.map((poster) => (
+          {posters.map((poster) => (
             <div key={poster.id} className="poster-card rounded-[10px] h-fit">
               <div className="poster-image">
                 <img
@@ -94,7 +89,7 @@ export default function ViewPage() {
             </div>
           ))}
         </div>
-      </section> */}
+      </section>
     </div>
   );
 }

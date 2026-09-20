@@ -61,7 +61,7 @@ export default function AdminPage() {
 
       // 2. Get public image URL
       const { data: urlData } = supabase.storage
-        .from("posters")
+        .from("poster_img")
         .getPublicUrl(fileName);
 
       // 3. Convert tags to array

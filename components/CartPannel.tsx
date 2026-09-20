@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingBag, X } from "lucide-react";
+import { ShoppingBag, X, MinusIcon, PlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import CheckoutModal, { CheckoutItem } from "./CheckoutModal";
@@ -89,17 +89,33 @@ export default function CartPannel() {
           {sampleCartItems.map((item) => (
             <div
               key={item.id}
-              className="flex gap-3 rounded-[10px] border border-white/10 bg-white/[0.04] p-3"
+              className="grid grid-cols-[5fr_2fr] border border-white/10 bg-white/[0.04] rounded-2xl"
             >
-              <div className="h-20 w-16 rounded-[8px] bg-amber-100/15" />
-              <div className="flex flex-1 flex-col justify-center">
-                <h3 className="font-semibold text-amber-50">{item.title}</h3>
-                <p className="text-sm text-amber-100/60">
-                  {item.category} x {item.quantity}
-                </p>
-                <p className="mt-1 text-sm font-semibold text-heighlight">
-                  {item.price * item.quantity} birr
-                </p>
+              <div className="info flex gap-3 rounded-[10px]  p-3">
+                <div className="h-20 w-16 rounded-[8px] bg-amber-100/15" />
+                <div className="flex flex-1 flex-col justify-center">
+                  <h3 className="font-semibold text-amber-50">{item.title}</h3>
+                  <p className="text-sm text-amber-100/60">
+                    {item.category} x {item.quantity}
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-heighlight">
+                    {item.price * item.quantity} birr
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-center items-center">
+                <div className="bg-white/30 flex rounded-2xl p-1 gap-1 shadow-2xl shadow-black">
+                  <MinusIcon
+                    onClick={() => ""}
+                    className="bg-amber-100/50 rounded-l-2xl hover:bg-black/10"
+                  />
+                  <h1>{item.quantity}</h1>
+                  <PlusIcon
+                    onClick={() => ""}
+                    className="bg-amber-100/50 rounded-r-2xl hover:bg-black/10"
+                  />
+                </div>
               </div>
             </div>
           ))}
@@ -122,7 +138,6 @@ export default function CartPannel() {
           </button>
         </div>
       </aside>
-
     </div>
   );
 
