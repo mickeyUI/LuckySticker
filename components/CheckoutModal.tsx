@@ -258,15 +258,15 @@ export default function CheckoutModal({
                 Order received
               </h3>
               <p className="mx-auto mt-3 max-w-md text-amber-100/70">
-                Your sample checkout flow is complete. You can replace this with
-                your order API or database insert when the backend is ready.
+                your order has been sent, a conformation SMS message will be
+                sent to you in the next 5 to 10 minutes for conformation.
               </p>
               <button
                 type="button"
                 className="mt-7 rounded-full bg-heighlight px-6 py-3 font-bold text-black transition hover:bg-secondary"
                 onClick={() => {
-                  setIsOrdered(false);
                   onClose();
+                  setIsOrdered(false);
                 }}
               >
                 Done

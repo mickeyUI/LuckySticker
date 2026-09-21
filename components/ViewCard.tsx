@@ -53,8 +53,8 @@ export default function ViewCard({
     }
   };
   return (
-    <section className="location p-25">
-      <div className="grid lg:grid-cols-[3fr_2fr] gap-0 px-20">
+    <section className="location flex justify-center items-center pb-10">
+      <div className="flex flex-col justify-center items-center md:items-start md:flex-row gap-0 px-10 gap-15">
         <div className="image overflow-hidden border-2 border-amber-500/20 rounded-[20px] shadow-amber-500/20 shadow-2xl lg:h-[600px] aspect-[1/1.4142]">
           {poster_img && (
             <img
@@ -65,7 +65,7 @@ export default function ViewCard({
           )}
         </div>
 
-        <div className="location-card flex flex-col w-fit h-fit p-10 gap-2">
+        <div className="info-card flex flex-col w-fit h-fit p-10 gap-2">
           <h2 className="font-display text-4xl font-bold ">{name}</h2>
           <p className="text-amber-100">{tagsString}</p>
 

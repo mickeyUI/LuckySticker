@@ -65,22 +65,28 @@ export default function Home() {
             </a>
             <div className="hidden items-center gap-7 text-[17px] text-crema/75 md:flex">
               <a
-                href={`#`}
+                href={`#popcategory`}
+                className="transition hover:text-saffron hover:text-heighlight"
+              >
+                Category
+              </a>
+              <a
+                href={`#location`}
                 className="transition hover:text-saffron hover:text-heighlight"
               >
                 Location
               </a>
               <a
-                href={`#`}
+                href={`#socials`}
+                className="transition hover:text-saffron hover:text-heighlight"
+              >
+                Socials
+              </a>
+              <a
+                href={`#faq`}
                 className="transition hover:text-saffron hover:text-heighlight"
               >
                 FAQ
-              </a>
-              <a
-                href={`#`}
-                className="transition hover:text-saffron hover:text-heighlight"
-              >
-                Category
               </a>
 
               <CartPannel />
@@ -119,7 +125,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="popularcategores p-15">
+      <section className="popularcategores p-15" id="popcategory">
         <div className="mb-20 flex justify-center">
           <h1 className=" text-8xl font-bold">Popular Categories</h1>
         </div>
@@ -151,7 +157,7 @@ export default function Home() {
                 key={collection.name}
                 title={collection.name}
                 imageUrl={collection.img}
-                link="#"
+                link=""
                 bgColor={collection.bgColor}
               />
             ))}
@@ -159,7 +165,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="location p-25">
+      <section className="location p-25" id="location">
         {/* <div className="mb-10">
           <h1 className=" text-6xl">Fast Deliver Locations</h1>
         </div> */}
@@ -198,7 +204,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section-shell grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+      <section
+        id="socials"
+        className="section-shell grid gap-8 lg:grid-cols-[0.8fr_1.2fr]"
+      >
         <div>
           <p className="eyebrow">Social Ritual</p>
           <h2 className="section-title text-8xl font-bold">
@@ -294,7 +303,7 @@ export default function Home() {
       <footer className="px-5 pb-10">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 border-t border-white/10 pt-8 text-sm text-crema/55 md:flex-row md:items-center md:justify-between">
           <p>Lucky Stickers </p>
-          <p>Owner - Henna Welse</p>
+          <p>Owner - ........</p>
         </div>
       </footer>
     </main>

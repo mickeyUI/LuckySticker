@@ -12,18 +12,29 @@ type poster = {
   name: string;
   poster_img: string;
   tags: string[];
+  category: CategoryProp;
+};
+
+type CategoryProp = {
+  name: string;
 };
 
 export default function Categories() {
   const router = useRouter();
   const [posters, setPosters] = useState<poster[]>([]);
   const [query, setQuery] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const params = new URLSearchParams();
   useEffect(() => {
     const loadData = async () => {
       const { data, error } = await supabase
         .from("poster")
-        .select("id, name, poster_img, tags");
+        .select("id, name, poster_img, tags").select(`
+    *,
+    category:categories (
+      name
+    )
+  `);
       setPosters(data);
       if (error) {
         console.log(error);
@@ -31,8 +42,12 @@ export default function Categories() {
     };
     loadData();
   }, []);
-
-  const parameterSearch = () => {
+  const filteredPosters =
+    selectedCategory == "All"
+      ? posters
+      : posters.filter((poster) => poster.category.name == selectedCategory);
+  const parameterSearch = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     if (!query) return;
     params.set("q", query);
     router.push(`/Search?${params.toString()}`);
@@ -51,28 +66,33 @@ export default function Categories() {
             Lucky Sticker
           </Link>
         </div>
-        <div className="flex justify-end gap-5">
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="bg-amber-100/20 border-2 border-white/10 w-[40%] rounded-3xl text-black/80 text-[18px] pl-4 focus:outline-none focus:bg-amber-100/70 focus:border-white/30 transition-all ease-in-out"
-          />
-          <button
-            onClick={parameterSearch}
-            className="bg-heighlight/70 hover:bg-heighlight py-2 px-4 rounded-3xl transition-all ease-in-out"
-          >
-            Search
-          </button>
-          <CartPannel />
-        </div>
+        <form onSubmit={parameterSearch}>
+          <div className="flex justify-end gap-5">
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              type="text"
+              className="bg-amber-100/20 border-2 border-white/10 w-[40%] rounded-3xl text-black/80 text-[18px] pl-4 focus:outline-none focus:bg-amber-100/70 focus:border-white/30 transition-all ease-in-out"
+            />
+            <button
+              type="submit"
+              className="bg-heighlight/70 hover:bg-heighlight py-2 px-4 rounded-3xl transition-all ease-in-out"
+            >
+              Search
+            </button>
+            <CartPannel />
+          </div>
+        </form>
       </section>
 
-      <CategoryCarousel />
+      <CategoryCarousel
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+      />
 
       <section className="cards-display">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 p-10 w-fit">
-          {posters.map((poster) => (
+          {filteredPosters.map((poster) => (
             <div
               key={poster.id}
               onClick={() => handleViewingRoute(poster.id)}
@@ -82,7 +102,7 @@ export default function Categories() {
                 <img
                   src={poster.poster_img}
                   alt="img"
-                  className="h-[300px] w-[200px] object-cover"
+                  className="h-[300px] w-[300px] object-cover"
                 />
               </div>
 

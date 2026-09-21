@@ -8,7 +8,10 @@ type category = {
   id: string;
   name: string;
 };
-export default function CategoryCarousel() {
+export default function CategoryCarousel({
+  selectedCategory,
+  setSelectedCategory,
+}) {
   const [categories, setCategories] = useState<category[]>([]);
 
   useEffect(() => {
@@ -52,17 +55,29 @@ export default function CategoryCarousel() {
         /* Hide scrollbar classes */
         [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       >
+        <div
+          onClick={() => setSelectedCategory("All")}
+          className={` text-[18px] flex items-center gap-2 py-1.5 px-8 rounded-2xl whitespace-nowrap shrink-0 cursor-pointer hover:bg-amber-50/30 transition-colors
+              ${selectedCategory == "All" ? "bg-amber-700/40" : "bg-amber-50/20"}`}
+        >
+          <h1 className="text-base font-medium">All</h1>
+          {/* <div className="text-sm flex items-center justify-center bg-amber-50/40 px-2 py-0.5 rounded-full">
+              32
+            </div> */}
+        </div>
         {categories.map((category) => (
           <div
             key={category.id}
+            onClick={() => setSelectedCategory(category.name)}
             // Added whitespace-nowrap so items don't wrap to the next line
             // Added shrink-0 so flexbox doesn't squish them
-            className="bg-amber-50/20 text-[18px] flex items-center gap-2 py-1.5 px-3 rounded-2xl whitespace-nowrap shrink-0 cursor-pointer hover:bg-amber-50/30 transition-colors"
+            className={` text-[18px] flex items-center gap-2 py-2 px-8 rounded-2xl whitespace-nowrap shrink-0 cursor-pointer hover:bg-amber-50/30 transition-colors
+              ${selectedCategory == category.name ? "bg-amber-700/40" : "bg-amber-50/20"}`}
           >
             <h1 className="text-base font-medium">{category.name}</h1>
-            <div className="text-sm flex items-center justify-center bg-amber-50/40 px-2 py-0.5 rounded-full">
+            {/* <div className="text-sm flex items-center justify-center bg-amber-50/40 px-2 py-0.5 rounded-full">
               32
-            </div>
+            </div> */}
           </div>
         ))}
       </div>

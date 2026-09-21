@@ -16,7 +16,6 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
 }) => {
   return (
     <a
-      href={link}
       className={`border grid grid-cols-2 border-white/15  rounded-[20px]  relative  h-120 w-120 max-w-[600px] flex-1 transition-colors duration-300 overflow-hidden mx-0`}
     >
       {/* Title positioned at top left with max-width to allow wrapping (e.g., "Beauty & Health") */}

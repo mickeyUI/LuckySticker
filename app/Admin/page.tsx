@@ -49,7 +49,8 @@ export default function AdminPage() {
       setMessage("");
 
       // 1. Upload image to Supabase Storage
-      const fileName = `${Date.now()}-${file.name}`;
+      const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const fileName = `${crypto.randomUUID()}.${extension}`;
 
       const { error: uploadError } = await supabase.storage
         .from("poster_img")
