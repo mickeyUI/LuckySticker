@@ -4,6 +4,7 @@ import { useState } from "react";
 import RadioCards from "./RadioCards";
 import { useCart } from "@/context/Context";
 import { CartItem } from "@/context/Context";
+import { toast } from "sonner";
 
 type ViewCardProps = {
   id: string;
@@ -12,7 +13,7 @@ type ViewCardProps = {
   tags: string[];
 };
 
-type CardSizeProp = {
+export type CardSizeProp = {
   id: string;
   label: string;
   price: number;
@@ -53,9 +54,9 @@ export default function ViewCard({
     }
   };
   return (
-    <section className="location flex justify-center items-center pb-10">
-      <div className="flex flex-col justify-center items-center md:items-start md:flex-row gap-0 px-10 gap-15">
-        <div className="image overflow-hidden border-2 border-amber-500/20 rounded-[20px] shadow-amber-500/20 shadow-2xl lg:h-[600px] aspect-[1/1.4142]">
+    <section className="location flex items-center justify-center px-4 pb-10 sm:px-8">
+      <div className="flex w-full max-w-6xl flex-col items-center justify-center gap-8 md:flex-row md:items-start lg:gap-15">
+        <div className="image aspect-[1/1.4142] w-full max-w-md overflow-hidden rounded-[20px] border-2 border-amber-500/20 shadow-2xl shadow-amber-500/20 lg:h-[600px]">
           {poster_img && (
             <img
               src={poster_img}
@@ -65,8 +66,10 @@ export default function ViewCard({
           )}
         </div>
 
-        <div className="info-card flex flex-col w-fit h-fit p-10 gap-2">
-          <h2 className="font-display text-4xl font-bold ">{name}</h2>
+        <div className="info-card flex h-fit w-full max-w-md flex-col gap-2 p-6 sm:p-8 lg:p-10">
+          <h2 className="font-display break-words text-3xl font-bold sm:text-4xl">
+            {name}
+          </h2>
           <p className="text-amber-100">{tagsString}</p>
 
           <div>
@@ -84,7 +87,10 @@ export default function ViewCard({
             </div>
           </div>
           <button
-            onClick={handleAddToCart}
+            onClick={() => {
+              handleAddToCart();
+              toast.success("Poster Added");
+            }}
             className="p-4 rounded-4xl hover:bg-black/50 bg-black transform transition-all ease-in-out"
           >
             + Add To Cart

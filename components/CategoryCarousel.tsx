@@ -8,16 +8,21 @@ type category = {
   id: string;
   name: string;
 };
+
+type CarouselProp = {
+  selectedCategory: string;
+  setSelectedCategory: React.Dispatch<React.SetStateAction<string>>;
+};
 export default function CategoryCarousel({
   selectedCategory,
   setSelectedCategory,
-}) {
+}: CarouselProp) {
   const [categories, setCategories] = useState<category[]>([]);
 
   useEffect(() => {
     const loadCategories = async () => {
       const { data, error } = await supabase.from("categories").select("*");
-      setCategories(data);
+      setCategories(data ?? []);
       if (error) {
         console.log(error);
       }

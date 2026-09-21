@@ -1,12 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { CardSizeProp } from "./ViewCard";
 
-export default function RadioSquareCards({
+type RadioCardsProp = {
+  cardSize: CardSizeProp[];
+  selectedCard: string;
+  setSelectedCard: React.Dispatch<React.SetStateAction<string>>;
+};
+export default function RadioCards({
   cardSize,
   selectedCard = "A1",
   setSelectedCard,
-}) {
+}: RadioCardsProp) {
   // Store the ID of the currently selected card (defaulting to 'A1')
 
   return (

@@ -14,6 +14,32 @@ import { FiArrowUpRight, FiChevronDown } from "react-icons/fi";
 import CartPannel from "../components/CartPannel";
 import PopCategoriesCard from "../components/PopCategoriesCard";
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 36 }, // named state 1
+  visible: { opacity: 1, y: 0 }, // named state 2
+};
+type RevealProp = {
+  children: React.ReactNode;
+  className?: string;
+  id?: string;
+  delay?: number;
+};
+
+function Reveal({ children, className = "", id = "", delay = 0 }: RevealProp) {
+  return (
+    <motion.div
+      id={id}
+      className={className}
+      variants={fadeUp} // "here are my named states"
+      initial="hidden" // start in the hidden state
+      whileInView="visible" // when scrolled into view, animate to visible
+      viewport={{ once: false, amount: 0.25 }} // once: never re-hide; amount: 25% must be visible
+      transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1], delay }}
+    >
+      {children}
+    </motion.div>
+  );
+}
 export default function Home() {
   const faqs = [
     {
@@ -51,44 +77,45 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState(0);
   return (
     <main>
-      <section className="herosection h-[100vh] bg- w-full  bg-[url('../public/background.png')] bg-cover bg-center bg-no-repeat">
-        <div className="h-[100vh] leniear-gradiant-effect absolute inset-0 bg-gradient-to-t from-backgroundd/100 via-backgroundd/60 to-transparent"></div>
+      <section className="herosection relative min-h-screen w-full bg-[url('../public/background.png')] bg-cover bg-center bg-no-repeat">
+        <div className="leniear-gradiant-effect absolute inset-0 min-h-screen bg-gradient-to-t from-backgroundd/100 via-backgroundd/60 to-transparent"></div>
 
         {/* navigation */}
         <nav className="fixed left-1/2 top-4 z-50 w-[min(1120px,calc(100%-24px))] -translate-x-1/2 rounded-full card-style px-5 py-4 shadow-glass backdrop-blur-2xl">
           <div className="flex items-center justify-between gap-4">
             <a
               href="#top"
-              className="text-heighlight font-display text-2xl font-bold tracking-wide"
+              className="text-heighlight font-display md:text-2xl font-bold tracking-wide"
             >
               Lucky Sticker
             </a>
-            <div className="hidden items-center gap-7 text-[17px] text-crema/75 md:flex">
-              <a
-                href={`#popcategory`}
-                className="transition hover:text-saffron hover:text-heighlight"
-              >
-                Category
-              </a>
-              <a
-                href={`#location`}
-                className="transition hover:text-saffron hover:text-heighlight"
-              >
-                Location
-              </a>
-              <a
-                href={`#socials`}
-                className="transition hover:text-saffron hover:text-heighlight"
-              >
-                Socials
-              </a>
-              <a
-                href={`#faq`}
-                className="transition hover:text-saffron hover:text-heighlight"
-              >
-                FAQ
-              </a>
-
+            <div className="flex items-center gap-4">
+              <div className="hidden items-center gap-7 text-[17px] text-crema/75 md:flex">
+                <a
+                  href={`#popcategory`}
+                  className="transition hover:text-saffron hover:text-heighlight"
+                >
+                  Category
+                </a>
+                <a
+                  href={`#location`}
+                  className="transition hover:text-saffron hover:text-heighlight"
+                >
+                  Location
+                </a>
+                <a
+                  href={`#socials`}
+                  className="transition hover:text-saffron hover:text-heighlight"
+                >
+                  Socials
+                </a>
+                <a
+                  href={`#faq`}
+                  className="transition hover:text-saffron hover:text-heighlight"
+                >
+                  FAQ
+                </a>
+              </div>
               <CartPannel />
 
               {/* <a
@@ -101,36 +128,44 @@ export default function Home() {
           </div>
         </nav>
 
-        <div className="relative z-10 flex flex-col gap-4 h-full justify-center px-5 pt-54 sm:px-8 lg:px-14">
-          <h1 className="text-[75px] font-semibold font-sans  ">
-            Express Yourself, Get <br />
+        <Reveal
+          delay={0.2}
+          className="relative z-10 flex min-h-screen flex-col justify-center gap-4 px-5 pb-16 pt-32 sm:px-8 lg:px-14 lg:pt-40"
+        >
+          <h1 className="max-w-4xl text-5xl font-semibold font-sans sm:text-6xl lg:text-7xl">
+            Express Yourself, Get
+            <br className="hidden sm:block" />
             <em>Inspired</em>
           </h1>
-          <p className="text-heighlight text-2xl">
+          <p className="max-w-2xl text-lg text-heighlight sm:text-xl lg:text-2xl">
             Explore our collection of ready-to-print posters, from art and
-            photography
-            <br /> to quotes, designs, and more
+            photography to quotes, designs, and more
           </p>
-          <div className="flex w-fit ml-2 mt-5 gap-5">
+          <Reveal delay={0.5} className="mt-5 flex w-fit gap-5 sm:ml-2">
             <Link
               href={"/Categories"}
-              className="bg-heighlight text-black text-[20px] flex items-center gap-1 rounded-4xl  py-2.5 px-4.5"
+              className="bg-heighlight text-black text-[20px] flex items-center gap-1 rounded-4xl  py-2.5 px-4.5 transition-all delay-75 ease-in-out hover:-translate-y-0.5"
             >
               Explore Posters <FiArrowUpRight />
             </Link>
             {/* <button className="bg-white/20 border border-white/40 text-black text-[20px] flex items-center gap-1 rounded-4xl  py-2.5 px-4.5">
               SignUp
             </button> */}
-          </div>
-        </div>
+          </Reveal>
+        </Reveal>
       </section>
 
-      <section className="popularcategores p-15" id="popcategory">
-        <div className="mb-20 flex justify-center">
-          <h1 className=" text-8xl font-bold">Popular Categories</h1>
+      <Reveal
+        className="popularcategores px-4 py-16 sm:px-8 lg:p-15"
+        id="popcategory"
+      >
+        <div className="mb-12 flex justify-center sm:mb-20">
+          <h1 className="text-center text-4xl font-bold sm:text-6xl lg:text-8xl">
+            Popular Categories
+          </h1>
         </div>
         <div className="flex justify-center items-center w-full ">
-          <div className="grid lg:grid-cols-2 w-auto gap-15 gap-x-50">
+          <div className="grid w-full max-w-5xl gap-8 lg:grid-cols-2 lg:gap-12">
             {[
               {
                 name: "Anime Collection",
@@ -163,18 +198,18 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </Reveal>
 
-      <section className="location p-25" id="location">
+      <Reveal className="location px-4 py-16 sm:px-8 lg:p-20" id="location">
         {/* <div className="mb-10">
           <h1 className=" text-6xl">Fast Deliver Locations</h1>
         </div> */}
 
-        <div className="grid lg:grid-cols-[3fr_2fr] gap-15">
-          <div className="image border-2 border-amber-500/20 rounded-[20px] shadow-amber-500/20 shadow-2xl h-[60vh] w-full bg-[url('../public/map.png')] bg-cover bg-center bg-no-repeat"></div>
+        <div className="grid gap-8 lg:grid-cols-[3fr_2fr] lg:gap-12">
+          <div className="image h-[45vh] min-h-72 w-full rounded-[20px] border-2 border-amber-500/20 bg-[url('../public/map.png')] bg-cover bg-center bg-no-repeat shadow-2xl shadow-amber-500/20 lg:h-[60vh]"></div>
 
-          <div className="location-card flex flex-col justify-around p-7 md:p-10 h-[60vh]">
-            <h2 className="font-display text-5xl font-bold">
+          <div className="location-card flex min-h-72 flex-col justify-around p-6 sm:p-8 lg:h-[60vh] lg:p-10">
+            <h2 className="font-display text-3xl font-bold sm:text-4xl lg:text-5xl">
               Fast Delivery Locations
             </h2>
             <div className="mt-8 space-y-5 text-crema/72 text-[17px]">
@@ -202,15 +237,15 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </Reveal>
 
-      <section
+      <Reveal
         id="socials"
         className="section-shell grid gap-8 lg:grid-cols-[0.8fr_1.2fr]"
       >
         <div>
           <p className="eyebrow">Social Ritual</p>
-          <h2 className="section-title text-8xl font-bold">
+          <h2 className="section-title text-4xl font-bold sm:text-6xl lg:text-8xl">
             Follow the journey
           </h2>
         </div>
@@ -239,7 +274,7 @@ export default function Home() {
             return (
               <motion.a
                 key={social.label}
-                href="#top"
+                // href=""
                 whileHover={{ y: -8, scale: 1.02 }}
                 className={` ${social.color}`}
               >
@@ -252,12 +287,12 @@ export default function Home() {
             );
           })}
         </div>
-      </section>
+      </Reveal>
 
-      <section id="faq" className="section-shell max-w-5xl">
+      <Reveal id="faq" className="section-shell max-w-5xl">
         <div className="text-center">
           <p className="eyebrow justify-center">FAQ</p>
-          <h2 className="section-title text-8xl font-bold">
+          <h2 className="section-title text-4xl font-bold sm:text-6xl lg:text-8xl">
             Most Asked Questions
           </h2>
         </div>
@@ -298,7 +333,7 @@ export default function Home() {
             </div>
           ))}
         </div>
-      </section>
+      </Reveal>
 
       <footer className="px-5 pb-10">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 border-t border-white/10 pt-8 text-sm text-crema/55 md:flex-row md:items-center md:justify-between">

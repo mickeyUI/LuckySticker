@@ -48,6 +48,7 @@ export default function CartPannel() {
       />
 
       <aside
+        data-lenis-prevent
         className={`absolute right-0 top-0 flex h-full w-full max-w-sm flex-col border-l border-amber-100/15 bg-backgroundd/95 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.45)] transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
@@ -80,7 +81,7 @@ export default function CartPannel() {
           </div>
         )}
 
-        <div className="flex flex-1 flex-col gap-3 overflow-y-auto py-0">
+        <div className="flex flex-1 flex-col gap-3 overflow-y-auto py-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {items.map((item) => (
             <div
               key={`${item.id}-${item.size}`}

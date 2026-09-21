@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { ChevronLeft, ChevronLeftCircle, ShoppingBag } from "lucide-react";
 import ViewCard from "../../components/ViewCard";
 import { useSearchParams } from "next/navigation";
@@ -8,6 +8,8 @@ import { supabase } from "@/service/supabaseClient";
 import CartPannel from "@/components/CartPannel";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
 type Poster = {
   id: string;
   name: string;
@@ -15,7 +17,7 @@ type Poster = {
   tags: string[];
 };
 
-export default function ViewPage() {
+function ViewPageContent() {
   const [poster, setPoster] = useState<Poster>({
     id: "",
     name: "",
@@ -91,19 +93,22 @@ export default function ViewPage() {
   };
   return (
     <div>
-      <section className="uppersection grid grid-cols-[2fr_4fr]  p-5 mb-5">
+      <section className="uppersection mb-5 grid gap-4 p-4 sm:p-5 lg:grid-cols-[2fr_4fr]">
         <div className="flex items-center">
-          <Link href={"/"} className="text-3xl font-bold text-amber-100/90">
+          <Link
+            href={"/"}
+            className="text-2xl font-bold text-amber-100/90 sm:text-3xl"
+          >
             Lucky Sticker
           </Link>
         </div>
         <form onSubmit={parameterSearch}>
-          <div className="flex justify-end gap-5">
+          <div className="flex flex-wrap justify-end gap-3 sm:gap-5">
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               type="text"
-              className="bg-amber-100/20 border-2 border-white/10 w-[40%] rounded-3xl text-black/80 text-[18px] pl-4 focus:outline-none focus:bg-amber-100/70 focus:border-white/30 transition-all ease-in-out"
+              className="min-w-0 flex-1 rounded-3xl border-2 border-white/10 bg-amber-100/20 pl-4 text-[18px] text-black/80 transition-all ease-in-out focus:border-white/30 focus:bg-amber-100/70 focus:outline-none"
             />
             <button
               type="submit"
@@ -128,7 +133,7 @@ export default function ViewPage() {
         tags={poster.tags}
       />
       <section className="cards-display">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 p-10 w-full">
+        <div className="grid w-full grid-cols-1 gap-6 p-4 sm:grid-cols-2 sm:gap-8 sm:p-6 lg:grid-cols-4 lg:p-10 xl:grid-cols-5">
           {similarPosters.map((poster) => (
             <div
               key={poster.id}
@@ -139,12 +144,12 @@ export default function ViewPage() {
                 <img
                   src={poster.poster_img}
                   alt="img"
-                  className="h-[300px] w-[300px] object-cover"
+                  className="aspect-square h-auto w-full object-cover"
                 />
               </div>
 
               <div className="info-display">
-                <h1 className="text-[20px] font-bold leading-tight h-[40px]">
+                <h1 className="min-h-10 text-[20px] font-bold leading-tight">
                   {poster.name}
                 </h1>
               </div>
@@ -153,5 +158,13 @@ export default function ViewPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function ViewPage() {
+  return (
+    <Suspense fallback={null}>
+      <ViewPageContent />
+    </Suspense>
   );
 }

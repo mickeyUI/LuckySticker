@@ -12,6 +12,7 @@ import { useMemo, useState } from "react";
 import { CartItem } from "@/context/Context";
 import { supabase } from "@/service/supabaseClient";
 import { useCart } from "@/context/Context";
+import { Loader2 } from "lucide-react";
 
 type OrderProp = {
   customer_name: string;
@@ -20,7 +21,7 @@ type OrderProp = {
   payment_method: PaymentMode;
   status: Status;
   payment_screenshot: string;
-  payment_status: Status;
+  payment_status: PayStatus;
 };
 
 type OrderItemProp = {
@@ -38,7 +39,8 @@ type DeliveryLocation = {
 };
 
 type PaymentMode = "onDelivery" | "transfer";
-type Status = "pending";
+type Status = "pending" | "ordered" | "delivered" | "Canceled";
+type PayStatus = "pending" | "accepted" | "rejected";
 type TransferProvider = "Telebirr" | "CBE";
 
 type CheckoutModalProps = {
@@ -114,9 +116,10 @@ export default function CheckoutModal({
     useState<TransferProvider>("Telebirr");
   const [receiptName, setReceiptName] = useState("");
   const [customerName, setcustomerName] = useState("");
-  const [phoneNumber, setphoneNumber] = useState();
+  const [phoneNumber, setphoneNumber] = useState<string>();
   const [isOrdered, setIsOrdered] = useState(false);
-  const [file, setFile] = useState();
+  const [ordering, setOrdering] = useState(false);
+  const [file, setFile] = useState<File | null>();
 
   const selectedLocation = sampleDeliveryLocations.find(
     (location) => location.id === locationId,
@@ -165,13 +168,13 @@ export default function CheckoutModal({
   async function handleOrder() {
     if (!canOrder) return;
     if (!customerName || !phoneNumber) return;
-
+    setOrdering(true);
     const paymentScreenshotUrl = await uploadScreenshot();
 
     const order: OrderProp = {
       customer_name: customerName,
       phone_number: phoneNumber,
-      delivery_location: selectedLocation?.name,
+      delivery_location: selectedLocation?.name ?? "",
       payment_method: paymentMode,
       status: "pending",
       payment_screenshot: paymentScreenshotUrl,
@@ -195,6 +198,7 @@ export default function CheckoutModal({
         };
         const { error } = await supabase.from("order_items").insert(orderitem);
       });
+      setOrdering(false);
     } catch (error) {
       console.log(error);
     }
@@ -219,7 +223,8 @@ export default function CheckoutModal({
       />
 
       <section
-        className={`relative max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-[18px] border border-amber-100/20 bg-backgroundd/95 p-5 shadow-[0_28px_100px_rgba(0,0,0,0.62)] backdrop-blur-2xl transition duration-300 sm:p-7 ${
+        data-lenis-prevent
+        className={`relative max-h-[92vh] w-full max-w-3xl overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] rounded-[18px] border border-amber-100/20 bg-backgroundd/95 p-4 shadow-[0_28px_100px_rgba(0,0,0,0.62)] backdrop-blur-2xl transition duration-300 sm:p-7 ${
           isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
         }`}
         role="dialog"
@@ -438,11 +443,15 @@ export default function CheckoutModal({
 
               <button
                 type="button"
-                className="w-full rounded-full bg-heighlight px-5 py-3 font-bold text-black transition hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-45"
+                className="w-full rounded-full flex justify-center items-center bg-heighlight px-5 py-3 font-bold text-black transition hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-45"
                 onClick={handleOrder}
                 disabled={!canOrder}
               >
-                Order
+                {ordering ? (
+                  <Loader2 className="animate-spin text-amber-100" />
+                ) : (
+                  "Order"
+                )}
               </button>
             </div>
           </div>
