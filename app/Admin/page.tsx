@@ -227,7 +227,7 @@ export default function AdminPage() {
 
           {/* Main */}
           {post ? (
-            <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
+            <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 w-full">
               <h2 className="text-xl font-semibold">Add Poster</h2>
 
               <form onSubmit={handleSubmit} className="mt-6 space-y-5">
