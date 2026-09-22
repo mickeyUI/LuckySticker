@@ -195,7 +195,7 @@ export default function AdminPage() {
     await getOrders();
   };
   return (
-    <main className="min-h-screen overflow-x-hidden bg-zinc-950 p-4 text-white sm:p-8">
+    <main className="min-h-screen w-full overflow-x-hidden bg-zinc-950 p-4 text-white sm:p-8">
       <div className="mx-auto max-w-5xl">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         <p className="mt-1 text-zinc-400">Manage your poster store.</p>
@@ -205,7 +205,7 @@ export default function AdminPage() {
           order={selectedOrder ?? null}
           updateTable={updateTableLazyway}
         />
-        <div className="mt-8 grid gap-8 md:grid-cols-[220px_minmax(0,1fr)]">
+        <div className="mt-8 flex flex-col md:flex-row gap-5">
           {/* Sidebar */}
           <aside className="rounded-xl border border-zinc-800 bg-zinc-900 p-4 h-fit">
             <nav className="space-y-1">
@@ -331,32 +331,32 @@ export default function AdminPage() {
               </form>
             </section>
           ) : (
-            <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 flex flex-col gap-5">
-              <div className="flex  justify-around gap-5">
+            <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-6 space-y-8">
+              <div className="grid grid-cols-2 md:grid-cols-4  justify-around gap-5">
                 <button
                   // onClick={}
-                  className="flex flex-col gap-4 stat-box w-full p-5 "
+                  className="flex flex-col gap-4 stat-box w-full p-5 text-yellow-200"
                 >
                   <h1 className="">Pending </h1>
                   <p>{ordersStat?.pending}</p>
                 </button>
                 <button
                   // onClick={}
-                  className="flex flex-col gap-4 stat-box w-full p-5 "
+                  className="flex flex-col gap-4 stat-box w-full p-5 text-green-200"
                 >
                   <h1 className="">Delivering</h1>
                   <p>{ordersStat?.ordered}</p>
                 </button>
                 <button
                   // onClick={}
-                  className="flex flex-col gap-4 stat-box w-full p-5 "
+                  className="flex flex-col gap-4 stat-box w-full p-5 text-green-400"
                 >
                   <h1 className="">Delivered</h1>
                   <p>{ordersStat?.delivered}</p>
                 </button>
                 <button
                   // onClick={}
-                  className="flex flex-col gap-4 stat-box w-full p-5 "
+                  className="flex flex-col gap-4 stat-box w-full p-5 text-red-400"
                 >
                   <h1 className="">Canceled</h1>
                   <p>{ordersStat?.canceled}</p>
@@ -364,7 +364,7 @@ export default function AdminPage() {
               </div>
 
               <div className="w-full overflow-x-auto rounded-lg border border-amber-900/20">
-                <table className="w-full min-w-[800px] text-left">
+                <table className="w-full   text-left">
                   <thead className="bg-amber-50/10">
                     <tr className="border-b border-amber-900/20">
                       <th className="px-4 py-3 text-sm font-semibold">

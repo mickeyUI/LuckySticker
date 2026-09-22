@@ -336,9 +336,11 @@ export default function Home() {
       </Reveal>
 
       <footer className="px-5 pb-10">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 border-t border-white/10 pt-8 text-sm text-crema/55 md:flex-row md:items-center md:justify-between">
+        <div className="mx-auto flex max-w-7xl  gap-6 border-t border-white/10 pt-8 text-sm text-crema/55 flex-row md:items-center justify-between">
           <p>Lucky Stickers </p>
-          <p>Owner - ........</p>
+          <Link href={"/Admin"} className="cursor-none">
+            Forsythe Tech
+          </Link>
         </div>
       </footer>
     </main>
