@@ -1,14 +1,13 @@
 "use client";
 
 import { Suspense, useState, useEffect } from "react";
-import { ChevronLeft, ChevronLeftCircle, ShoppingBag } from "lucide-react";
+import { ChevronLeftCircle } from "lucide-react";
 import ViewCard from "../../components/ViewCard";
 import { useSearchParams } from "next/navigation";
 import { supabase } from "@/service/supabaseClient";
 import CartPannel from "@/components/CartPannel";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 type Poster = {
   id: string;
